@@ -21,21 +21,24 @@
   <span class="dot" style="background:#9e9e9e"></span>давно</div>
 <div id="map"></div>
 <script>
-const cams = [{"lat": 43.231101, "lon": 76.777303, "place": "г. Алматы, ЛУ 1222 р.Райымбека выезд с рынка Алтын Орда (западном нап)", "direction": "Запад, от ул. Алатау в сторону ул. Кунаева", "speed": "60", "count": 1, "last": "04.11.2026", "fresh": true}, {"lat": 43.241372, "lon": 76.820662, "place": "г. Алматы, ЛУ 1417 пр. Райымбека западнее ЖК \"Гулдер\" в восточном направлении", "direction": "Восток, от ул. Ашимова в сторону ул. Яссауи", "speed": "60", "count": 2, "last": "10.10.2026", "fresh": false}, {"lat": 43.228442, "lon": 76.812359, "place": "г. Алматы, ЛУ 1017 ул.Кунаева напротив ЛУ 319 в западном направлении", "direction": "Запад, от мкр. Калкаман-2 ул. 6 в сторону мкр. Калкаман-2 ул. 3", "speed": "?", "count": 1, "last": "01.11.2026", "fresh": true}, {"lat": 43.264877, "lon": 76.938512, "place": "г. Алматы, ЛУ 1230 ул. Желтоксан 62/6 в северном направлении", "direction": "Север, от ул. Макатаева в сторону ул. Маметовой", "speed": "?", "count": 1, "last": "09.11.2026", "fresh": true}, {"lat": 43.210869, "lon": 76.341271, "place": "Алматинская область, ЛУ 192 школа Олжа, медколледж пешеход", "direction": "Запад, от Село Каргалы в сторону с. Узынагаш, ул.Суюнбая", "speed": "40", "count": 1, "last": "09.11.2026", "fresh": true}];
+const cams = [{"lat": 43.231101, "lon": 76.777303, "place": "г. Алматы, ЛУ 1222 р.Райымбека выезд с рынка Алтын Орда (западном нап)", "direction": "Запад, от ул. Алатау в сторону ул. Кунаева", "speed": "60", "violations": ["Скорость"], "count": 1, "last": "04.11.2026", "fresh": true}, {"lat": 43.241372, "lon": 76.820662, "place": "г. Алматы, ЛУ 1417 пр. Райымбека западнее ЖК \"Гулдер\" в восточном направлении", "direction": "Восток, от ул. Ашимова в сторону ул. Яссауи", "speed": "60", "violations": ["Скорость"], "count": 2, "last": "10.10.2026", "fresh": false}, {"lat": 43.228442, "lon": 76.812359, "place": "г. Алматы, ЛУ 1017 ул.Кунаева напротив ЛУ 319 в западном направлении", "direction": "Запад, от мкр. Калкаман-2 ул. 6 в сторону мкр. Калкаман-2 ул. 3", "speed": "", "violations": [], "count": 1, "last": "01.11.2026", "fresh": true}, {"lat": 43.264877, "lon": 76.938512, "place": "г. Алматы, ЛУ 1230 ул. Желтоксан 62/6 в северном направлении", "direction": "Север, от ул. Макатаева в сторону ул. Маметовой", "speed": "", "violations": [], "count": 1, "last": "09.11.2026", "fresh": true}, {"lat": 43.210869, "lon": 76.341271, "place": "Алматинская область, ЛУ 192 школа Олжа, медколледж пешеход", "direction": "Запад, от Село Каргалы в сторону с. Узынагаш, ул.Суюнбая", "speed": "40", "violations": ["Скорость"], "count": 1, "last": "09.11.2026", "fresh": true}];
 const map = L.map('map').setView([43.238, 76.889], 12);
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
   maxZoom: 19,
   attribution: 'Tiles &copy; Esri'
 }).addTo(map);
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[ch]);
 cams.forEach(c => {
+  let html = '<b>📷 ' + esc(c.place) + '</b>';
+  if (c.direction) html += '<br>➡️ ' + esc(c.direction);
+  if (c.violations.length) html += '<br>⚠️ Ловит: ' + esc(c.violations.join(', '));
+  if (c.speed) html += '<br>🚦 Разрешено: ' + esc(c.speed) + ' км/ч';
+  html += '<br>✅ Подтверждена штрафами: ' + c.count +
+          '<br>🕒 Последний штраф: ' + esc(c.last);
   L.circleMarker([c.lat, c.lon], {
     radius: 8 + Math.min(c.count, 10), color: '#fff', weight: 2,
     fillColor: c.fresh ? '#e53935' : '#9e9e9e', fillOpacity: 0.9
-  }).addTo(map).bindPopup(
-    '<b>📷 ' + c.place + '</b><br>➡️ ' + c.direction +
-    '<br>🚦 Разрешено: ' + c.speed + ' км/ч' +
-    '<br>✅ Подтверждена штрафами: ' + c.count +
-    '<br>🕒 Последний штраф: ' + c.last);
+  }).addTo(map).bindPopup(html);
 });
 </script>
 </body>
