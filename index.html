@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Камеры Алматы</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; font-family: system-ui, sans-serif; }
+  #map { height: 100%; }
+  .info { position: absolute; top: 10px; left: 50px; right: 10px; z-index: 1000;
+          background: #fff; padding: 8px 12px; border-radius: 10px;
+          box-shadow: 0 2px 8px rgba(0,0,0,.2); font-size: 14px; }
+  .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin:0 4px 0 10px; }
+</style>
+</head>
+<body>
+<div class="info"><b>Камеры Алматы</b> · 2 камер ·
+  <span class="dot" style="background:#e53935"></span>штраф за 30 дней
+  <span class="dot" style="background:#9e9e9e"></span>давно</div>
+<div id="map"></div>
+<script>
+const cams = [{"lat": 43.231101, "lon": 76.777303, "place": "г. Алматы, ЛУ 1222 р.Райымбека выезд с рынка Алтын Орда (западном нап)", "direction": "Запад, от ул. Алатау в сторону ул. Кунаева", "speed": "60", "count": 1, "last": "04.11.2026", "fresh": true}, {"lat": 43.241372, "lon": 76.820662, "place": "г. Алматы, ЛУ 1417 пр. Райымбека западнее ЖК \"Гулдер\" в восточном направлении", "direction": "Восток, от ул. Ашимова в сторону ул. Яссауи", "speed": "60", "count": 2, "last": "10.10.2026", "fresh": false}];
+const map = L.map('map').setView([43.238, 76.889], 12);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+  maxZoom: 19,
+  attribution: 'Tiles &copy; Esri'
+}).addTo(map);
+cams.forEach(c => {
+  L.circleMarker([c.lat, c.lon], {
+    radius: 8 + Math.min(c.count, 10), color: '#fff', weight: 2,
+    fillColor: c.fresh ? '#e53935' : '#9e9e9e', fillOpacity: 0.9
+  }).addTo(map).bindPopup(
+    '<b>📷 ' + c.place + '</b><br>➡️ ' + c.direction +
+    '<br>🚦 Разрешено: ' + c.speed + ' км/ч' +
+    '<br>✅ Подтверждена штрафами: ' + c.count +
+    '<br>🕒 Последний штраф: ' + c.last);
+});
+</script>
+</body>
+</html>
